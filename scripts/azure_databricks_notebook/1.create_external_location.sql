@@ -1,18 +1,66 @@
--- Create the external location required for this project in Azure Databricks SQL Notebook
+-- =====================================================================================
+-- File: 01_setup_external_locations.sql
+-- Description: Configure external locations for Unity Catalog medallion architecture
+-- Created: 2025-01-31
+-- =====================================================================================
 
--- Bronze
--- Silver
+-- ## Overview
+-- Creates external locations for Bronze, Silver, and Gold layers in Unity Catalog
+-- Prerequisites: Storage credential 'databricks-project-storage-credential' must exist
 
-create external location databricks_vnpay_project_ext_bronze
-  url 'abfss://bronze@vnpayproject.dfs.core.windows.net/'
-  with (storage credential `databricks-vnpay-project-storage-credential`);
+-- =====================================================================================
+-- VERIFY STORAGE CREDENTIAL
+-- =====================================================================================
 
-DESC EXTERNAL LOCATION databricks_vnpay_project_ext_bronze;
+SHOW STORAGE CREDENTIALS;
 
-%fs
-ls "abfss://bronze@vnpayproject.dfs.core.windows.net/"
+-- =====================================================================================
+-- CREATE EXTERNAL LOCATIONS
+-- =====================================================================================
 
-create external location databricks_vnpay_project_ext_silver
-  url 'abfss://silver@vnpayproject.dfs.core.windows.net/'
-  with (storage credential `databricks-vnpay-project-storage-credential`);
+-- Bronze Layer - Raw Data
+CREATE EXTERNAL LOCATION IF NOT EXISTS databricks_project_ext_bronze
+  URL 'abfss://bronze@projectstorage.dfs.core.windows.net/'
+  WITH (STORAGE CREDENTIAL `databricks-project-storage-credential`)
+  COMMENT 'Bronze layer - raw data storage';
 
+-- Silver Layer - Processed Data  
+CREATE EXTERNAL LOCATION IF NOT EXISTS databricks_project_ext_silver
+  URL 'abfss://silver@projectstorage.dfs.core.windows.net/'
+  WITH (STORAGE CREDENTIAL `databricks-project-storage-credential`)
+  COMMENT 'Silver layer - processed data storage';
+
+-- Gold Layer - Business Ready Data
+CREATE EXTERNAL LOCATION IF NOT EXISTS databricks_project_ext_gold
+  URL 'abfss://gold@projectstorage.dfs.core.windows.net/'
+  WITH (STORAGE CREDENTIAL `databricks-project-storage-credential`)
+  COMMENT 'Gold layer - business-ready data storage';
+
+-- =====================================================================================
+-- VERIFICATION
+-- =====================================================================================
+
+-- List all external locations
+SHOW EXTERNAL LOCATIONS;
+
+-- Describe each external location
+DESC EXTERNAL LOCATION databricks_project_ext_bronze;
+DESC EXTERNAL LOCATION databricks_project_ext_silver;
+DESC EXTERNAL LOCATION databricks_project_ext_gold;
+
+-- Test storage access (use in notebook)
+-- %fs ls "abfss://bronze@projectstorage.dfs.core.windows.net/"
+-- %fs ls "abfss://silver@projectstorage.dfs.core.windows.net/"
+-- %fs ls "abfss://gold@projectstorage.dfs.core.windows.net/"
+
+-- =====================================================================================
+-- TROUBLESHOOTING
+-- =====================================================================================
+
+-- If storage credential missing:
+-- CREATE STORAGE CREDENTIAL `databricks-project-storage-credential` USING AZURE_MANAGED_IDENTITY;
+
+-- If permission denied:  
+-- Verify Azure RBAC roles: Storage Blob Data Contributor/Reader on storage account
+
+-- =====================================================================================
