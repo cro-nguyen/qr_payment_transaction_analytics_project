@@ -4,7 +4,7 @@
 
 Welcome to the **Digital QR Payment Analytics Project** repository!
 
-This project demonstrates a comprehensive data warehousing and analytics solution built on the Azure platform. It showcases an end-to-end data engineering pipeline that handles the complete data lifecycle: from ingesting raw QR payment transaction data into a data lake, through ETL processes for data standardization and cleansing, to loading business-ready data into a data warehouse that feeds interactive BI dashboards for daily business operations. The project also incorporates advanced machine learning capabilities for customer churn prediction and fraud detection.
+This project demonstrates a comprehensive data lakehouse and analytics solution built on the Azure platform. It showcases an end-to-end data engineering pipeline that handles the complete data lifecycle: from ingesting raw QR payment transaction data into a data lake, through ETL processes for data standardization and cleansing, to loading business-ready data into a data warehouse that feeds interactive BI dashboards for daily business operations. The project also incorporates advanced machine learning capabilities for customer churn prediction and fraud detection.
 
 Designed as a portfolio project, it highlights industry best practices in modern data engineering, analytics, and cloud architecture.
 
