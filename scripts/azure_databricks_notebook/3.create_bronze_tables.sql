@@ -27,12 +27,12 @@
 -- **Format**: Parquet files
 -- **Update Pattern**: Daily batch loads
 
-DROP TABLE IF EXISTS qrproject_dev.bronze.alltransaction_fact;
+DROP TABLE IF EXISTS qrpayment_dev.bronze.alltransaction_fact;
 
-CREATE TABLE IF NOT EXISTS qrproject_dev.bronze.alltransaction_fact 
+CREATE TABLE IF NOT EXISTS qrpayment_dev.bronze.alltransaction_fact 
 USING PARQUET
 OPTIONS (
-  path 'abfss://bronze@qrproject.dfs.core.windows.net/alltransactions_fact/'
+  path 'abfss://bronze@qrpayment.dfs.core.windows.net/alltransactions_fact/'
 )
 COMMENT 'External table for raw QR payment transaction data';
 
@@ -44,12 +44,12 @@ COMMENT 'External table for raw QR payment transaction data';
 -- **Format**: Parquet files
 -- **Update Pattern**: Weekly incremental updates
 
-DROP TABLE IF EXISTS qrproject_dev.bronze.customerlookup;
+DROP TABLE IF EXISTS qrpayment_dev.bronze.customerlookup;
 
-CREATE TABLE IF NOT EXISTS qrproject_dev.bronze.customerlookup
+CREATE TABLE IF NOT EXISTS qrpayment_dev.bronze.customerlookup
 USING PARQUET
 OPTIONS (
-  path 'abfss://bronze@qrproject.dfs.core.windows.net/CustomerLookup_New/'
+  path 'abfss://bronze@qrpayment.dfs.core.windows.net/CustomerLookup_New/'
 )
 COMMENT 'External table for customer lookup and reference data';
 
@@ -61,12 +61,12 @@ COMMENT 'External table for customer lookup and reference data';
 -- **Format**: Parquet files
 -- **Update Pattern**: Daily updates for active merchants
 
-DROP TABLE IF EXISTS qrproject_dev.bronze.merchant_lookup;
+DROP TABLE IF EXISTS qrpayment_dev.bronze.merchant_lookup;
 
-CREATE TABLE IF NOT EXISTS qrproject_dev.bronze.merchant_lookup
+CREATE TABLE IF NOT EXISTS qrpayment_dev.bronze.merchant_lookup
 USING PARQUET
 OPTIONS (
-  path 'abfss://bronze@qrproject.dfs.core.windows.net/merchant_list/'
+  path 'abfss://bronze@qrpayment.dfs.core.windows.net/merchant_list/'
 )
 COMMENT 'External table for merchant lookup and business classification data';
 
@@ -78,12 +78,12 @@ COMMENT 'External table for merchant lookup and business classification data';
 -- **Format**: Parquet files  
 -- **Update Pattern**: Monthly updates or as standards change
 
-DROP TABLE IF EXISTS qrproject_dev.bronze.mcc_lookup;
+DROP TABLE IF EXISTS qrpayment_dev.bronze.mcc_lookup;
 
-CREATE TABLE IF NOT EXISTS qrproject_dev.bronze.mcc_lookup
+CREATE TABLE IF NOT EXISTS qrpayment_dev.bronze.mcc_lookup
 USING PARQUET
 OPTIONS (
-  path 'abfss://bronze@qrproject.dfs.core.windows.net/mcc_vnpay/'
+  path 'abfss://bronze@qrpayment.dfs.core.windows.net/mcc_vnpay/'
 )
 COMMENT 'External table for Merchant Category Code lookup data';
 
@@ -95,22 +95,22 @@ COMMENT 'External table for Merchant Category Code lookup data';
 -- Use these queries to verify table creation and data accessibility
 
 -- **Check table creation status**
-SHOW TABLES IN qrproject_dev.bronze;
+SHOW TABLES IN qrpayment_dev.bronze;
 
 -- **Verify table schemas and properties**
-DESCRIBE EXTENDED qrproject_dev.bronze.alltransaction_fact;
-DESCRIBE EXTENDED qrproject_dev.bronze.customerlookup;
-DESCRIBE EXTENDED qrproject_dev.bronze.merchant_lookup;
-DESCRIBE EXTENDED qrproject_dev.bronze.mcc_lookup;
+DESCRIBE EXTENDED qrpayment_dev.bronze.alltransaction_fact;
+DESCRIBE EXTENDED qrpayment_dev.bronze.customerlookup;
+DESCRIBE EXTENDED qrpayment_dev.bronze.merchant_lookup;
+DESCRIBE EXTENDED qrpayment_dev.bronze.mcc_lookup;
 
 -- **Test data accessibility (sample queries)**
--- SELECT COUNT(*) as transaction_count FROM qrproject_dev.bronze.alltransaction_fact;
--- SELECT COUNT(*) as customer_count FROM qrproject_dev.bronze.customerlookup;
--- SELECT COUNT(*) as merchant_count FROM qrproject_dev.bronze.merchant_lookup;
--- SELECT COUNT(*) as mcc_count FROM qrproject_dev.bronze.mcc_lookup;
+-- SELECT COUNT(*) as transaction_count FROM qrpayment_dev.bronze.alltransaction_fact;
+-- SELECT COUNT(*) as customer_count FROM qrpayment_dev.bronze.customerlookup;
+-- SELECT COUNT(*) as merchant_count FROM qrpayment_dev.bronze.merchant_lookup;
+-- SELECT COUNT(*) as mcc_count FROM qrpayment_dev.bronze.mcc_lookup;
 
 -- **Check for data freshness**
--- SELECT MAX(ingestion_date) as latest_data FROM qrproject_dev.bronze.alltransaction_fact;
+-- SELECT MAX(ingestion_date) as latest_data FROM qrpayment_dev.bronze.alltransaction_fact;
 
 -- =====================================================================================
 -- TROUBLESHOOTING
@@ -125,7 +125,7 @@ DESCRIBE EXTENDED qrproject_dev.bronze.mcc_lookup;
 
 -- **Issue**: Cannot access data files  
 -- **Solution**: Check file paths and container accessibility
--- %fs ls "abfss://bronze@qrproject.dfs.core.windows.net/"
+-- %fs ls "abfss://bronze@qrpayment.dfs.core.windows.net/"
 
 -- **Issue**: Schema inference fails
 -- **Solution**: Ensure Parquet files are valid and accessible
