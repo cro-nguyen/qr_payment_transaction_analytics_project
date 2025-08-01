@@ -56,19 +56,7 @@ This comprehensive analytics solution encompasses the following key components:
 
 ## Architecture Diagram
 
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Bronze Layer  │    │  Silver Layer   │    │   Gold Layer    │
-│  (Raw Data)     │───▶│  (Delta Lake)   │───▶│ (Azure Synapse) │
-│ Azure Storage   │    │Azure Databricks │    │ Data Warehouse  │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         ▲                        │                        │
-         │                        ▼                        ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│  QR Payment     │    │   ML Models     │    │   Power BI      │
-│ Source Systems  │    │(Churn & Fraud)  │    │  Dashboards     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
+![Data Architecture](docs/data_architecture.png)
 
 ## Key Features
 
