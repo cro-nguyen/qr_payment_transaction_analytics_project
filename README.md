@@ -146,7 +146,7 @@ This project features a comprehensive PowerBI dashboard that provides real-time 
 📊 **Demo Access Available:** Contact me for demo account credentials to explore the full interactive dashboard with real-time data
 
 **Sample Dashboard Preview:** Refer to the PDF documentation included in this repository for detailed dashboard screenshots and feature overview
-![Power BI Dashboard Sample](powerbi_report/sample_powerbi_report_vnpay_project_dashboard.pdf)
+([powerbi_report/sample_powerbi_report_vnpay_project_dashboard.pdf](https://github.com/cro-nguyen/qr_payment_transaction_analytics_project/blob/main/powerbi_report/sample_powerbi_report_vnpay_project_dashboard.pdf))
 
 #### Technical Integration
 
