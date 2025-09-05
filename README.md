@@ -127,6 +127,46 @@ The project began with a straightforward requirement: analyze QR payment transac
 * **Data Formats**: Parquet, Delta Lake, CSV
 * **Programming Languages**: Python, PySpark, Spark SQL, SQL
 
+## PowerBI Dashboard & Analytics
+
+### Interactive Business Intelligence Dashboard
+
+This project features a comprehensive PowerBI dashboard that provides real-time insights into QR payment analytics. The dashboard delivers actionable business intelligence through interactive visualizations and KPI monitoring.
+
+#### Dashboard Features
+
+**Executive Summary View:**
+**Merchant Performance Metrics & KPIs:**
+**User Performance Metrics**
+
+#### Dashboard Access
+
+**Live Dashboard:** [VNPAY QR Payment Analytics Dashboard](https://app.powerbi.com/links/-7ylGa7nbi?ctid=f4fe40e9-2aca-4f19-a900-802821146fed&pbi_source=linkShare&bookmarkGuid=59316a18-0cf1-4afa-a728-212ba3472d63)
+
+📊 **Demo Access Available:** Contact me for demo account credentials to explore the full interactive dashboard with real-time data
+
+**Sample Dashboard Preview:** Refer to the PDF documentation included in this repository for detailed dashboard screenshots and feature overview
+![Power BI Dashboard Sample](powerbi_report/sample_powerbi_report_vnpay_project_dashboard.pdf)
+
+#### Technical Integration
+
+The PowerBI dashboard connects directly to Azure Synapse SQL Serverless Pool, enabling:
+- **Real-time Data Access:** Direct querying of 87M+ transaction records
+- **Optimized Performance:** Year/month partitioned Delta Lake tables
+- **Scalable Architecture:** Auto-scaling based on query demand
+- **Security:** Row-level security and data governance compliance
+
+#### Business Impact
+
+The dashboard enables stakeholders to:
+- Monitor daily payment processing performance
+- Track merchant and user engagement metrics
+- Identify high-value customers and transaction patterns
+- Make data-driven decisions for business growth
+- Detect anomalies and potential fraud in real-time
+
+---
+
 ## Key Learning Outcomes
 
 ### 🎓 Technical Skills Developed
