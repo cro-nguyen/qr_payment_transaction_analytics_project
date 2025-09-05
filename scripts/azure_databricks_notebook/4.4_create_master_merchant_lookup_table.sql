@@ -1,7 +1,7 @@
 -- =====================================================================================
 -- File: 4.4_create_master_merchant_lookup_table.sql
 -- Description: Create master merchant lookup table from terminal data
--- Created: 2025-01-31
+-- Created: 2025-07-31
 -- =====================================================================================
 
 -- ## Overview
