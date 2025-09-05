@@ -1,7 +1,7 @@
 -- =====================================================================================
 -- File: 01_setup_catalog_schemas.sql
 -- Description: Create Unity Catalog and schemas for medallion architecture
--- Created: 2025-01-31
+-- Created: 2025-07-31
 -- =====================================================================================
 
 -- ## Overview
