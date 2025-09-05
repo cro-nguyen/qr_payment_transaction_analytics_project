@@ -1,132 +1,186 @@
-# Digital QR Payment Analytics Project
+# QR Payment Analytics Project
 
 ## Introduction
 
-Welcome to the **Digital QR Payment Analytics Project** repository!
+Welcome to the **QR Payment Analytics Project** repository!
 
-This project demonstrates a comprehensive data lakehouse and analytics solution built on the Azure platform. It showcases an end-to-end data engineering pipeline that handles the complete data lifecycle: from ingesting raw QR payment transaction data into a data lake, through ETL processes for data standardization and cleansing, to loading business-ready data into a data warehouse that feeds interactive BI dashboards for daily business operations. The project also incorporates advanced machine learning capabilities for customer churn prediction and fraud detection.
+This project represents a comprehensive journey through modern data engineering challenges and solutions, built on the Azure platform. What started as a simple CSV-to-PowerBI integration evolved into a sophisticated data lakehouse architecture that demonstrates real-world problem-solving in data analytics. The project showcases how technical challenges drive learning and innovation, ultimately leading to an enterprise-grade medallion architecture solution for processing over 80 million QR payment transactions.
 
-Designed as a portfolio project, it highlights industry best practices in modern data engineering, analytics, and cloud architecture.
+This portfolio project highlights not just the final solution, but the iterative learning process and decision-making that led to adopting industry best practices in data engineering and analytics.
 
-## Project Overview
+## The Journey: From CSV to Enterprise Data Lakehouse
 
-This comprehensive analytics solution encompasses the following key components:
+### 🎯 Initial Challenge
+The project began with a straightforward requirement: analyze QR payment transaction data stored in multiple CSV files (200 files, 18GB) on local hard drive and create PowerBI dashboards for business insights.
 
-### 🏗️ 1. Data Architecture - Medallion Framework
-- **Bronze Layer (Raw Data)**: Azure Storage Account storing raw QR payment transaction data in its original format
-- **Silver Layer (Cleaned Data)**: Delta Lake on Azure Databricks providing ACID transactions, schema enforcement, and data versioning for cleaned and standardized data
-- **Gold Layer (Business Data)**: Azure Synapse Analytics serving as the enterprise data warehouse with optimized fact and dimension tables for analytics
+### 📈 Evolution Through Problems and Solutions
 
-### ⚙️ 2. ETL Pipelines
-- **Data Ingestion**: Automated extraction of QR payment data from source systems
-- **Azure Databricks Processing**: Scalable data transformation handling high-volume transaction data using PySpark
-- **Data Standardization**: Cleaning, validating, and enriching payment transaction data
-- **Azure Synapse Integration**: Loading processed data into the data warehouse with optimized schemas
-- **Orchestration**: Automated pipeline scheduling and monitoring
+#### Phase 1: Direct Database Approach
+**Initial Solution**: 
+- Used Python Notebook to bulk upload CSV files to Azure SQL Database
+- Planned to connect PowerBI directly to the relational database
 
-### 📊 3. Data Modeling
-- **Dimensional Modeling**: Star schema design with fact tables for transactions and dimension tables for customers, merchants, and time
-- **Data Quality Framework**: Implementing validation rules, consistency checks, and data lineage tracking
-- **Performance Optimization**: Indexing strategies and partitioning for fast query performance
-- **Business Logic**: Calculated fields and measures for key payment analytics metrics
+**Problem Encountered**: 
+- Extremely slow data transformation and cleaning processes, espcially for big transactional data
+- Inefficient data normalization within relational database
+- Poor performance for complex analytics queries
+- Semantic model creation was time-consuming and resource-intensive
 
-### 📈 4. Analytics & Reporting
-- **SQL Analytics**: Complex queries for payment trends, customer behavior, and merchant performance
-- **Power BI Dashboards**: Interactive visualizations showing transaction volumes, success rates, and revenue metrics
-- **Business Intelligence**: KPI monitoring for payment processing efficiency and customer satisfaction
-- **Automated Reporting**: Scheduled reports for stakeholders and operational teams
+#### Phase 2: Spark-Powered Transformation
+**Learning & Solution**: 
+- Discovered the power of Apache Spark for large-scale data processing
+- Implemented data transformation, cleaning, and normalization using Spark via Azure Databricks
+- Significantly improved processing speed and efficiency
 
-### 🤖 5. Machine Learning
-- **Customer Churn Prediction**: ML models to identify customers likely to stop using QR payment services
-- **Fraud Detection**: Real-time anomaly detection models to flag suspicious transaction patterns
-- **Transaction Success Optimization**: Predictive models to improve payment completion rates
-- **Customer Segmentation**: Clustering analysis for targeted marketing and service improvements
+**New Problem**: 
+- Data stored in Data Lake as Parquet/Delta Lake format was not suitable for direct PowerBI querying
+- Performance issues with 80+ million transaction rows
+- PowerBI struggled with large-scale transactional data directly from Data Lake
 
-## Technology Stack
+#### Phase 3: Enterprise Lakehouse Architecture
+**Final Learning & Solution**: 
+- Discovered Azure Synapse Analytics capabilities
+- Learned to combine Spark Pools and SQL Serverless Pools
+- Implemented medallion architecture (Bronze-Silver-Gold) on Data Lake Storage Gen 2
+- Achieved direct PowerBI querying through SQL Serverless Pool with excellent performance
 
-- **Cloud Platform**: Microsoft Azure
-- **Data Lake**: Azure Storage Account (Bronze Layer)
-- **Data Processing**: Azure Databricks with PySpark
-- **Data Warehouse**: Azure Synapse Analytics (Gold Layer)
-- **Data Format**: Delta Lake (Silver Layer)
-- **Business Intelligence**: Microsoft Power BI
-- **Machine Learning**: Azure Machine Learning / Databricks MLflow
-- **Programming Languages**: SQL, Python, PySpark
-- **Data Formats**: Delta, Parquet, JSON, CSV
+## High-Level Architecture
 
-## Architecture Diagram
+![High Level Architecture](docs/data_architecture.png)
 
-![Data Architecture](docs/data_architecture.png)
+## Current Solution: Medallion Data Lakehouse
 
-## Key Features
+### 🏗️ Data Flow Architecture
 
-✅ **Medallion Architecture**: Industry-standard Bronze-Silver-Gold data lake pattern  
-✅ **Scalable Processing**: Handles high-volume QR payment transaction data  
-✅ **Real-time Analytics**: Near real-time fraud detection and transaction monitoring  
-✅ **Data Quality Assurance**: Comprehensive validation and data lineage tracking  
-✅ **Interactive Dashboards**: Business-friendly Power BI visualizations  
-✅ **Predictive Analytics**: ML models for churn prediction and fraud detection  
-✅ **Cloud-Native**: Fully Azure-based solution with enterprise scalability  
+#### Data Source Layer
+- **Source**: Multiple CSV files (200 files, 18GB) stored on local hard drive
+- **Content**: QR payment transaction data
+- **Challenge**: Distributed files requiring bulk processing
 
-## Business Use Cases
+#### Ingestion Layer  
+- **Tool**: Python Notebook with Pandas DataFrames
+- **Process**: Bulk upload from CSV files to Azure SQL Database
+- **Purpose**: Initial data landing and validation
+- **Interface**: DataFrame to SQL for bulk insert operations
 
-This analytics platform enables:
-- **Transaction Monitoring**: Real-time visibility into QR payment volumes and success rates
-- **Customer Analytics**: Understanding user behavior and payment preferences
-- **Merchant Insights**: Performance tracking for QR payment acceptance
-- **Fraud Prevention**: Automated detection of suspicious transaction patterns
-- **Customer Retention**: Proactive identification of at-risk customers
-- **Revenue Optimization**: Data-driven insights for payment processing improvements
+#### Data Lakehouse - Medallion Framework
 
-## Skills Demonstrated
+##### Bronze Layer (Raw Data)
+- **Storage**: Azure Data Lake Storage Gen 2
+- **Format**: Parquet External Tables
+- **Process**: 
+   - Azure Data Factory pipelines to extract data from Azure SQL Database
+   - Batch Processing with Full Load operations
+   - Data Lake & Insert operations for incremental updates
+- **Processing Engine**: Azure Data Factory for orchestration, Spark on Azure Databricks for data manipulation
+- **Transformation**: No transformation (preserving raw data lineage)
+- **Data Model**: As-is structure from source
 
-🎯 This repository showcases expertise across the modern data engineering stack:
+##### Silver Layer (Cleaned Data)
+- **Storage**: Managed Delta Lake Tables on Azure Data Lake Storage Gen 2
+- **Format**: Delta Lake files with ACID properties
+- **Process**:
+   - Batch Processing using Spark Pool in Azure Synapse Analytics
+   - Full Load with Truncate & Insert pattern for data refresh
+- **Processing Engine**: Spark Pool within Azure Synapse Analytics platform
+- **Transformation**:
+   - Data Cleansing and validation using PySpark
+   - Data Standardization across payment channels
+   - Data Normalization for consistent schema
+   - Data Enrichment with business rules and derived columns
+- **Data Model**: Standardized schema (As-is with improvements)
 
-- **Data Architecture**: Cloud-native data warehouse design using medallion architecture
-- **Data Engineering**: ETL pipeline development with Azure Databricks and Synapse
-- **SQL Development**: Advanced analytics queries and performance optimization
-- **Data Modeling**: Dimensional modeling and schema design for analytics
-- **Business Intelligence**: Dashboard creation and data visualization with Power BI
-- **Machine Learning**: Predictive modeling for business applications
-- **Cloud Technologies**: Azure ecosystem proficiency (Storage, Databricks, Synapse, ML)
-- **Big Data Processing**: Large-scale transaction data handling with PySpark
+##### Gold Layer (Business-Ready Data)
+- **Storage**: Managed Delta Lake Tables on Azure Data Lake Gen 2
+- **Process**:
+   - Full Load with advanced business transformations
+   - Spark-based aggregation and business logic implementation
+- **Transformation**:
+   - Data Integration across business domains
+   - Aggregation for pre-calculated KPIs
+   - Business Logic for analytics-ready metrics
+- **Data Model**:
+   - Star Schema with Fact and Dimension tables
+   - Aggregated Tables for optimal query performance
 
-## Getting Started
+#### Consumption Layer
 
-### Prerequisites
-- Azure subscription with contributor access
-- Azure Databricks workspace
-- Azure Synapse Analytics workspace
-- Power BI Pro or Premium license
-- Basic knowledge of SQL and Python
+##### Business Intelligence & Reporting
+- **Platform**: PowerBI connected via Azure Synapse SQL Serverless Pool
+- **Capability**: Ad-Hoc SQL Queries directly on Delta Lake data
+- **Performance**: Optimized for 80+ million transaction analysis
+- **User Experience**: Fast, responsive dashboards and reports
 
-### Repository Structure
-```
+##### Machine Learning & Advanced Analytics
+- **Platform**: Spark ML integrated with the data lakehouse
+- **Capabilities**: Customer churn prediction, fraud detection, transaction optimization
 
-```
+**Technology Stack**
 
-## Project Highlights
+* **Cloud Platform**: Microsoft Azure
+* **Data Orchestration**: Azure Data Factory
+* **Data Processing**: Apache Spark on Azure Databricks (Bronze Layer), Spark Pool in Azure Synapse Analytics (Silver & Gold Layers)
+* **Data Lakehouse**: Azure Synapse Analytics (SQL Serverless Pool and Spark Pool) on top of Azure Data Lake Storage Gen 2
+* **Initial Storage**: Azure SQL Database
+* **Development**: Python Notebooks, Jupyter
+* **Business Intelligence**: Microsoft PowerBI
+* **Data Formats**: Parquet, Delta Lake, CSV
+* **Programming Languages**: Python, PySpark, Spark SQL, SQL
 
-### Data Pipeline Achievements
+## Key Learning Outcomes
 
+### 🎓 Technical Skills Developed
 
-### Business Impact
+#### Problem-Solving Approach
+- **Iterative Development**: Learning to evolve solutions based on real-world challenges
+- **Performance Optimization**: Understanding when and why to choose different technologies
+- **Architecture Decision-Making**: Balancing simplicity vs. scalability requirements
 
+#### Technology Mastery
+- **Azure Ecosystem**: Deep hands-on experience with multiple Azure services
+- **Spark Processing**: Large-scale data processing and optimization techniques
+- **Delta Lake**: ACID transactions and schema evolution in data lakes
+- **Synapse Analytics**: Combining Spark Pools and SQL Serverless Pools effectively
 
-## Learning Outcomes
+#### Data Engineering Best Practices
+- **Medallion Architecture**: Industry-standard Bronze-Silver-Gold pattern implementation
+- **Data Quality**: Implementing validation and cleansing at appropriate layers
+- **Performance Tuning**: Optimizing queries for 80+ million row datasets
+- **Tool Integration**: Seamlessly connecting multiple Azure services
 
+### 📊 Business Impact Achieved
 
-## Future Enhancements
+#### Performance Improvements
+- **Query Performance**: Improvement in PowerBI dashboard load times
+- **Processing Speed**: Reduction in ETL processing time using Spark
+- **Scalability**: Architecture now handles 80+ million transactions efficiently
+- **User Experience**: Real-time responsive analytics for business users
 
-- **Real-time Streaming**: Implementation of Azure Event Hubs for live transaction processing
-- **Advanced ML**: Deep learning models for enhanced fraud detection accuracy
-- **API Integration**: RESTful APIs for real-time analytics consumption
-- **Data Governance**: Implementation of Azure Purview for comprehensive data cataloging
+#### Technical Achievements
+- **Data Volume**: Successfully processing 18GB across 200 CSV files
+- **Architecture Scalability**: Solution scales horizontally with data growth
+- **Tool Mastery**: Integrated 6+ Azure services into cohesive solution
+- **Best Practices**: Implemented enterprise-grade data engineering patterns
+
+## Lessons Learned
+
+### 🔍 Key Insights
+
+1. **Start Simple, Evolve Smart**: Initial simple solutions help understand requirements before building complex architectures
+2. **Performance Drives Architecture**: Real performance issues lead to better technology choices
+3. **Tool Selection Matters**: Choosing the right tool for each job significantly impacts success
+4. **Integration is Key**: Modern data solutions require seamless integration between multiple tools
+5. **Business Requirements Drive Technology**: Technical decisions should always serve business needs
+
+### 🚀 Future Enhancements
+
+- **Real-time Streaming**: Azure Event Hubs integration for live transaction processing
+- **Advanced Analytics**: Machine learning models for fraud detection and customer insights
 
 ## Contact & Collaboration
 
-This project is designed to showcase practical data engineering skills and industry-ready solutions. For questions, collaboration opportunities, or technical discussions about the implementation, please feel free to reach out!
+This project represents a journey of continuous learning and problem-solving in modern data engineering. It demonstrates how challenges drive innovation and lead to enterprise-grade solutions. The iterative approach showcases real-world development practices and decision-making processes.
+
+For questions about the implementation, technical discussions, or collaboration opportunities, please feel free to reach out!
 
 ---
-
-**Portfolio Project** | *Demonstrating expertise in modern data engineering, analytics, and machine learning on Azure platform*
