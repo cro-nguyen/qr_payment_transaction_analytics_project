@@ -1,7 +1,7 @@
 -- =====================================================================================
 -- File: 01_setup_external_locations.sql
 -- Description: Configure external locations for Unity Catalog medallion architecture
--- Created: 2025-01-31
+-- Created: 2025-07-31
 -- =====================================================================================
 
 -- ## Overview
