@@ -1,7 +1,7 @@
 -- =====================================================================================
 -- File: 4.7_create_alltransaction_fact_table.sql
 -- Description: Create and enrich transaction fact table in Silver layer
--- Created: 2025-01-31
+-- Created: 2025-07-31
 -- =====================================================================================
 
 -- ## Overview
