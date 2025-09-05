@@ -1,4 +1,4 @@
-# Naming Conventions - QR Payment Analytics Project
+# Naming Conventions - VNPAY QR Payment Analytics Project
 
 ## Overview
 
@@ -7,7 +7,7 @@ This document outlines naming conventions for schemas, tables, views, and column
 ## General Principles
 
 - **Case**: Use `snake_case` with lowercase and underscores
-- **Language**: English with Vietnamese business terms where appropriate
+- **Language**: English with Vietnamese business terms preserved from source systems
 - **Descriptive**: Names should clearly indicate purpose and content
 - **Consistent**: Maintain patterns across all layers
 - **No Reserved Words**: Avoid SQL reserved keywords
@@ -22,6 +22,12 @@ qrpayment_dev.silver
 qrpayment_dev.gold
 ```
 
+**Alternative Pattern**: `<project>_<layer>_<engine>`
+
+```sql
+vnpay_silver_spark     -- For Spark-based processing
+```
+
 ## Table Naming Conventions
 
 ### Bronze Layer (Raw Data)
@@ -29,34 +35,45 @@ qrpayment_dev.gold
 
 ```sql
 qrpayment_dev.bronze.alltransaction_fact
-qrpayment_dev.bronze.customer_lookup
 ```
 
 ### Silver Layer (Processed Data)  
-**Pattern**: `<business_entity>_<type>`
+**Pattern**: `<business_entity>lookup` or `<business_entity>_<type>`
 
 ```sql
 qrpayment_dev.silver.alltransaction_fact
-qrpayment_dev.silver.customer_lookup
-qrpayment_dev.silver.terminal_lookup
-qrpayment_dev.silver.merchant_lookup
-qrpayment_dev.silver.issuer_lookup
+qrpayment_dev.silver.customerlookup
+qrpayment_dev.silver.terminallookup
+qrpayment_dev.silver.merchantlookup
+qrpayment_dev.silver.mastermerchandlookup
+qrpayment_dev.silver.issuerlookup
+qrpayment_dev.silver.mcclookup
+```
+
+**Alternative Spark Schema**:
+```sql
+vnpay_silver_spark.alltransaction_fact
 ```
 
 ### Gold Layer (Business Ready)
-**Pattern**: `<prefix>_<business_entity>`
+**Pattern**: `<business_entity>_lookup` for dimension tables, `<business_entity>_<type>` for facts
 
-| Prefix | Purpose | Example |
-|--------|---------|---------|
-| `vw_` | Views for BI | `vw_alltransaction_fact` |
-| `dim_` | Dimension tables | `dim_customer` |
-| `fact_` | Fact tables | `fact_transactions` |
-| `report_` | Report tables | `report_daily_summary` |
-
+**Tables:**
 ```sql
-qrpayment_dev.gold.vw_alltransaction_fact
-qrpayment_dev.gold.vw_customer_analytics
-qrpayment_dev.gold.vw_fraud_detection
+vnpay_gold_spark.alltransaction_fact
+vnpay_gold_spark.issuer_lookup
+vnpay_gold_spark.master_merchant_lookup
+vnpay_gold_spark.mcc_lookup
+vnpay_gold_spark.merchant_lookup
+vnpay_gold_spark.terminal_lookup
+vnpay_gold_spark.user_lookup
+```
+
+**Views (Future):**
+```sql
+vnpay_gold_spark.vw_alltransaction_fact
+vnpay_gold_spark.vw_customer_analytics
+vnpay_gold_spark.vw_merchant_performance
 ```
 
 ## Column Naming
@@ -64,122 +81,128 @@ qrpayment_dev.gold.vw_fraud_detection
 ### Key Columns
 ```sql
 -- Primary/Foreign Keys
-user_id           -- Customer identifier
-terminal_id       -- Terminal identifier  
-merchant_id       -- Merchant identifier
-issuer_id         -- Card issuer identifier
+user_id                 -- Customer identifier
+terminal_id            -- Terminal identifier  
+merchant_id            -- Merchant identifier
+issuer_id              -- Card issuer identifier
 ```
 
-### Business Columns (Vietnamese Terms)
+### Business Columns (Vietnamese Source Terms Preserved)
 ```sql
--- Transaction Identifiers
-ma_gd                    -- Transaction ID
-ma_thanh_toan           -- Payment ID  
-ma_don_hang             -- Order ID
+-- Customer Information
+ten_kh_thanh_toan      -- Customer payment name
+so_dien_thoai          -- Original phone number
+so_dien_thoai_moi      -- Standardized phone number (Vietnamese format)
+don_vi_tt              -- Payment unit
+so_tai_khoan           -- Account number
+loai_the_tai_khoan     -- Account card type
 
--- Merchant Info
-ten_merchant            -- Merchant name
-ma_ten_terminal         -- Terminal code
-
--- Payment Data
-so_tien_truoc_km        -- Amount before promotion
-so_tien_sau_km          -- Amount after promotion
-phuong_thuc_thanh_toan  -- Payment method
-kenh_thanh_toan         -- Payment channel
-
--- Customer Info
-so_dien_thoai           -- Phone number
-so_tai_khoan            -- Account number
-loai_the_tai_khoan      -- Account type
-
--- Status & Timing
-trang_thai              -- Transaction status
-thoi_gian_thanh_toan    -- Payment timestamp
+-- Transaction Data
+ma_gd                  -- Transaction ID
+ma_thanh_toan          -- Payment ID
+thoi_gian_thanh_toan   -- Payment timestamp
+so_tien_truoc_km       -- Amount before promotion
+so_tien_sau_km         -- Amount after promotion
 ```
 
 ### Technical Columns
 ```sql
-ingestion_date          -- Load timestamp
-dwh_load_date          -- System load date
-dwh_created_date       -- Record creation
-dwh_updated_date       -- Last update
+-- Audit and Control
+created_date           -- Record creation timestamp
+updated_date           -- Last update timestamp
+ingestion_date         -- Data load timestamp
+dwh_load_date          -- Data warehouse load date
+
+-- Partitioning Columns
+year                   -- Partition by year (string format)
+month                  -- Partition by month (MM format string)
 ```
 
-## View Naming (Gold Layer)
+## File System Naming
 
-**Pattern**: `vw_<business_purpose>` - for Power BI consumption
-
-```sql
-vw_alltransaction_fact     -- All transaction reporting
-vw_customer_analytics      -- Customer analysis
-vw_merchant_performance    -- Merchant metrics
-vw_fraud_detection         -- Fraud monitoring
-vw_payment_trends          -- Payment analysis
+### ADLS Gen2 Container Structure
+```
+abfss://bronze@vnpayproject.dfs.core.windows.net/
+abfss://silver@vnpayproject.dfs.core.windows.net/
+abfss://gold@vnpayproject.dfs.core.windows.net/
 ```
 
-## Stored Procedures
-
-**Pattern**: `sp_<action>_<layer>` or `load_<layer>`
-
-```sql
-load_bronze                -- Bronze layer loading
-load_silver                -- Silver layer processing  
-load_gold                  -- Gold layer transformation
-sp_transform_silver_fact   -- Specific transformations
+### Unity Catalog Paths
+```
+abfss://silver@vnpayproject.dfs.core.windows.net/__unitystorage/schemas/{schema-guid}/tables/{table-guid}
 ```
 
-## Implementation Examples
-
-### Table Structure
-```sql
--- Bronze: External Parquet Tables
-CREATE TABLE qrpayment_dev.bronze.customer_lookup
-USING PARQUET
-OPTIONS (path 'abfss://bronze@storage.dfs.core.windows.net/customer_lookup/');
-
--- Silver: Managed Delta Tables
-CREATE TABLE qrpayment_dev.silver.alltransaction_fact AS
-SELECT 
-    CAST(ma_gd AS INT) AS ma_gd,
-    ma_thanh_toan,
-    ten_merchant,
-    UserID AS user_id,
-    current_timestamp() AS ingestion_date
-FROM qrpayment_dev.bronze.alltransaction_fact;
-
--- Gold: Views for Power BI
-CREATE VIEW qrpayment_dev.gold.vw_alltransaction_fact AS
-SELECT ma_gd, ma_thanh_toan, ten_merchant, user_id
-FROM OPENROWSET(
-    BULK 'abfss://silver@storage.dfs.core.windows.net/alltransaction_fact/',
-    FORMAT = 'DELTA'
-);
+### Standard Paths
+```
+abfss://silver@vnpayproject.dfs.core.windows.net/alltransaction_fact
 ```
 
-### Key Relationships
+## Lookup Table Patterns
+
+### Customer Dimension
 ```sql
--- Consistent foreign key naming
-alltransaction_fact.user_id → customer_lookup.user_id
-alltransaction_fact.terminal_id → terminal_lookup.terminal_id  
-alltransaction_fact.merchant_id → merchant_lookup.merchant_id
+CREATE TABLE vnpay_silver_spark.user_lookup (
+    user_id INT,                    -- Surrogate key
+    ten_kh_thanh_toan STRING,       -- Customer name
+    so_dien_thoai STRING,           -- Original phone
+    so_dien_thoai_moi STRING,       -- Standardized phone
+    don_vi_tt STRING,               -- Payment unit
+    so_tai_khoan STRING,            -- Account number
+    loai_the_tai_khoan STRING,      -- Account type
+    created_date TIMESTAMP,         -- Creation timestamp
+    updated_date TIMESTAMP          -- Update timestamp
+)
+```
+
+## Vietnamese Phone Number Standardization
+
+### Update Pattern for Phone Numbers
+```sql
+-- MobiFone prefix conversions
+WHEN SUBSTRING(so_dien_thoai, 1, 4) = '0120' THEN CONCAT('070', SUBSTRING(so_dien_thoai, 5))
+WHEN SUBSTRING(so_dien_thoai, 1, 4) = '0121' THEN CONCAT('079', SUBSTRING(so_dien_thoai, 5))
+
+-- VinaPhone prefix conversions  
+WHEN SUBSTRING(so_dien_thoai, 1, 4) = '0123' THEN CONCAT('083', SUBSTRING(so_dien_thoai, 5))
+
+-- Viettel prefix conversions
+WHEN SUBSTRING(so_dien_thoai, 1, 4) = '0162' THEN CONCAT('032', SUBSTRING(so_dien_thoai, 5))
+```
+
+## Deduplication Patterns
+
+### Customer Deduplication Logic
+```sql
+-- Composite key for uniqueness
+PARTITION BY 
+    COALESCE(so_dien_thoai, '_'),
+    COALESCE(don_vi_tt, '_'),
+    COALESCE(so_tai_khoan, '_')
 ```
 
 ## Data Quality Patterns
 
+### Null Handling
 ```sql
--- Handle 'nan' values consistently
-CASE WHEN column_name = 'nan' THEN NULL ELSE column_name END
+-- Consistent null representation
+COALESCE(column_name, '_')  -- For string comparisons
+COALESCE(column_name, 0)    -- For numeric comparisons
+```
 
--- MERGE operations for data enrichment
-MERGE INTO silver.alltransaction_fact 
-USING silver.customer_lookup 
-ON matching_conditions
+### Surrogate Key Generation
+```sql
+-- Auto-incrementing surrogate keys
+(SELECT COALESCE(MAX(user_id), 0) FROM target_table) + 
+ROW_NUMBER() OVER (ORDER BY natural_key_columns)
 ```
 
 ## Best Practices
 
-1. **Layer Consistency**: Use appropriate patterns for each medallion layer
-2. **Business Alignment**: Preserve Vietnamese business terminology
-3. **BI Optimization**: Gold layer views should be Power BI friendly  
-4. **Data Lineage**: Maintain clear naming relationships between layers
-5. **Tool Compatibility**: Ensure names work with Databricks, Synapse, Power BI
+1. **Vietnamese Business Terms**: Preserve original Vietnamese column names from source systems
+2. **Surrogate Keys**: Use auto-generated integer IDs for dimension tables
+3. **Phone Standardization**: Apply Vietnamese telecom prefix conversions
+4. **Partitioning Strategy**: Use year/month string partitions for time-based queries
+5. **Deduplication**: Use composite natural keys for uniqueness validation
+6. **ADLS Integration**: Follow abfss:// protocol for Data Lake Storage Gen 2
+7. **Delta Lake**: Use managed Delta tables for Silver and Gold layers
+8. **Unity Catalog**: Support both Unity Catalog and standard schema paths
