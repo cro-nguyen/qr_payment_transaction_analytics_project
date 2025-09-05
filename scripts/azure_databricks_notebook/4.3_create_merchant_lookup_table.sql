@@ -1,7 +1,7 @@
 -- =====================================================================================
 -- File: 4.3_create_merchant_lookup_table.sql
 -- Description: Create and populate merchant lookup table in Silver layer
--- Created: 2025-01-31
+-- Created: 2025-07-31
 -- =====================================================================================
 
 -- ## Overview
